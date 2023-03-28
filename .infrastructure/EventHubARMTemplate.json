@@ -1,0 +1,76 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "subscriptionSubString": {
+      "type": "string",
+      "defaultValue": "[subString(subscription().subscriptionId,0,6)]"
+    }
+  },
+  "variables": {
+    "resourceGroupName": "CloudMonthExampleTest",
+    "resourceGroupLocation": "uksouth",
+    "serviceBusNamespaceName": "[format('cloudmonth-eventhub-bus-{0}', parameters('subscriptionSubString'))]",
+    "serviceBusNamespaceNameOLD": "cloudmonth-eventhub-bus" 
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "name": "[variables('resourceGroupName')]",
+      "location": "[variables('resourceGroupLocation')]",
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "cloudMonthDeployment",
+      "resourceGroup": "[variables('resourceGroupName')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups/', variables('resourceGroupName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [
+            {
+                "type": "Microsoft.ServiceBus/namespaces",
+                "apiVersion": "2022-01-01-preview",
+                "name": "[variables('serviceBusNamespaceName')]",
+                "location": "[variables('resourceGroupLocation')]",
+                "sku": {
+                    "name": "Basic"
+                },
+                "properties": {},
+                "resources": [
+                  {
+                    "type": "Microsoft.ServiceBus/namespaces/queues",
+                    "dependsOn": [
+                      "[variables('serviceBusNamespaceName')]"
+                    ],
+                    "apiVersion": "2022-01-01-preview",
+                    "name": "[format('{0}/events', variables('serviceBusNamespaceName'))]",
+                    "properties": {
+                        "lockDuration": "PT5M",
+                        "maxSizeInMegabytes": 1024,
+                        "requiresDuplicateDetection": false,
+                        "requiresSession": false,
+                        "deadLetteringOnMessageExpiration": false,
+                        "duplicateDetectionHistoryTimeWindow": "PT10M",
+                        "maxDeliveryCount": 10,
+                        "enablePartitioning": false,
+                        "enableExpress": false
+                    }
+                  }
+                ]
+            }
+          ],
+          "outputs": {}
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}
