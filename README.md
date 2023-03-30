@@ -32,7 +32,7 @@ In Visual Studio, expand EventHub.Dispatch project and select the local.settings
 
 Repeat the step above for the EventHub.Listener.
 
-Finally, right click the EventHub.Dispatch & Start Without Debugging. Do the same for the EventHub.Listener.
+Finally, rebuild the solution, right click the EventHub.Dispatch & Start Without Debugging. Do the same for the EventHub.Listener.
 
 You can then send a request using a tool like Postman or Insomnia to the Dispatch endpoint:
 
