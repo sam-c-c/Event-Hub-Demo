@@ -44,3 +44,5 @@ You can then send a request using a tool like Postman or Insomnia to the Dispatc
 	"eventName": "This is a test event"
 }
 ```
+You should see something like the below, where the one on the left is the dispatch function and the one on the right is the listener:
+![image](https://user-images.githubusercontent.com/73018467/228932666-0ec422c8-c16e-40f7-92ec-ecbac5d5a92f.png)
